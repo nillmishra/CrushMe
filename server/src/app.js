@@ -61,21 +61,9 @@ app.post("/login", async (req, res) => {
     }
 });
 
-app.get("/profile", async (req, res) => {
+app.get("/profile",userAuth, async (req, res) => {
     try{
-    const cookies = req.cookies;
-    const { token } = cookies;
-    if (!token) {
-        throw new Error("Invalid token");
-    }
-    //verify the token
-    const decCodeMessage = jwt.verify(token, "Nill@crushme09");
-    const userId = decCodeMessage.userId;
-    console.log("UserID :" , userId);
-    const user = await User.findById(userId).select("-password");
-    if (!user) {
-        throw new Error("User not found");
-    }                                  
+    const user = req.user;                               
     res.send(user);
 } catch (error) {
     res.status(401).send("Error fetching profile: " + error.message);       

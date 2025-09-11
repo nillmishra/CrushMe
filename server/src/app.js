@@ -1,23 +1,85 @@
 const express = require('express');
 const connectDB = require('./config/database'); // Ensure database connection is established
 const app = express();
+const bcrypt = require('bcrypt');
 const User = require('./models/user');
-const e = require('express');
+const cookieParser = require('cookie-parser');
+const { validateSignupData } = require('./utils/validation');
+const jwt = require('jsonwebtoken');
+const { userAuth } = require('./middleware/auth');
 
 app.use(express.json()); // Middleware to parse JSON bodies
-
+app.use(cookieParser()); // Middleware to parse cookies
 // Signup route
 
 app.post("/signup", async (req, res) => {
-    //creating a new instance of user model
-    const user = new User(req.body);
+    //validation of data
     try {
+        validateSignupData(req);
+        const { firstName, lastName, email, password } = req.body;
+        //encryption of password
+        const passwordHash = await bcrypt.hash(password, 10);
+        console.log(passwordHash);
+        //creating a new instance of user model
+
+        const user = new User({
+            firstName,
+            lastName,
+            email,
+            password: passwordHash
+        });
+
         await user.save();
         res.send("User signed up");
     } catch (error) {
         console.error(error);
-        res.status(500).send("Error signing up user" + error.message);
+        res.status(400).send("Error signing up user" + error.message);
     }
+});
+
+app.post("/login", async (req, res) => {
+    try{
+        const { email, password } = req.body;
+        // Find user by email
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).send("Invalid Credentials!");
+        }
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (isPasswordValid) {
+            // CREATE A JWT TOKEN AND SEND IT TO THE USER
+            const token = await jwt.sign({ userId: user._id }, "Nill@crushme09");
+            console.log(token);
+            //ADD THE TOKEN To COOKIE and send the response to the user
+            res.cookie("token", token);
+        res.send("User logged in successfully");
+        } else {
+            throw new Error("Invalid Credentials!");
+        } 
+    } catch (error) {
+        res.status(400).send("Error logging in: " + error.message);
+    }
+});
+
+app.get("/profile", async (req, res) => {
+    try{
+    const cookies = req.cookies;
+    const { token } = cookies;
+    if (!token) {
+        throw new Error("Invalid token");
+    }
+    //verify the token
+    const decCodeMessage = jwt.verify(token, "Nill@crushme09");
+    const userId = decCodeMessage.userId;
+    console.log("UserID :" , userId);
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+        throw new Error("User not found");
+    }                                  
+    res.send(user);
+} catch (error) {
+    res.status(401).send("Error fetching profile: " + error.message);       
+}
 });
 
 //get user by mail
@@ -77,7 +139,7 @@ app.patch("/user/:userId", async (req, res) => {
         const isUpdateAllowed = Object.keys(data).every((k) =>
             ALLOWED_UPDATES.includes(k));
         if (!isUpdateAllowed) {
-           throw new Error("Invalid updates!");
+            throw new Error("Invalid updates!");
         }
         if (data.skills.length > 5) {
             throw new Error("Cannot add more than 5 skills");

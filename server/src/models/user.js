@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -37,11 +39,15 @@ const userSchema = new mongoose.Schema({
     },
     gender: {
         type: String,
-        validate(value){
-            if(!['Male', 'Female', 'Other'].includes(value)){
-                throw new Error("Gendder data is not valid");
-            }
+        enum: {
+            values: ['Male', 'Female', 'Other'],
+            message: `{VALUE} is not supported`
         }
+        // validate(value){
+        //     if(!['Male', 'Female', 'Other'].includes(value)){
+        //         throw new Error("Gendder data is not valid");
+        //     }
+        // }
     },
     photoUrl:{
         type: String,  
@@ -62,6 +68,19 @@ const userSchema = new mongoose.Schema({
 },{
     timestamps: true
 });
+
+userSchema.methods.getJWT = async function(){
+    const user = this;
+    const token = await jwt.sign({ userId: user._id }, "Nill@crushme09", { expiresIn: '1d' });
+    return token;
+};
+
+userSchema.methods.validatePassword = async function(x){
+    const user = this;
+    const passwordHash = user.password;
+    const isPasswordValid = await bcrypt.compare(x, passwordHash);
+    return isPasswordValid;
+};
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;

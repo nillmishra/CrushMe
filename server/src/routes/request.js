@@ -10,7 +10,7 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
         const fromUserId = req.user._id;
         const { toUserId, status } = req.params;
 
-        const validStatuses = ['intrested', 'ignored'];
+        const validStatuses = ['interested', 'ignored'];
         if (!validStatuses.includes(status)) {
             return res.status(400).json({message: "Invalid status value" });
         }
@@ -47,5 +47,29 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
     }
 });
 
+requestRouter.post("/request/review/:status/:requestUserId", userAuth, async (req, res) => {
+    try {
+        const loggedInUser = req.user;      
+        const { requestUserId, status } = req.params;
+        const validStatuses = ['accepted', 'rejected'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ message: "Invalid status value" });
+        }
+        const connectionRequest = await ConnectionRequest.findOne({
+            _id: requestUserId,
+            toUserId: loggedInUser._id,
+            status: 'interested'
+        });
+        if (!connectionRequest) {
+            return res.status(404).json({ message: "Connection request not found" });
+        }
+        connectionRequest.status = status;
+        const updatedRequest = await connectionRequest.save();
+        res.json({ message: req.user.firstName + " has " + status + " the connection request." , request: updatedRequest });
+    }
+    catch (error) {
+        res.status(500).send("Error reviewing connection request: " + error.message);
+    }
+});
 
 module.exports = requestRouter;

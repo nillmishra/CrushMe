@@ -11,7 +11,7 @@ authRouter.post("/signup", async (req, res) => {
     //validation of data
     try {
         validateSignupData(req);
-        const { firstName, lastName, email, password } = req.body;
+        const { firstName, lastName, email, password, interestedIn,age, gender} = req.body;
         //encryption of password
         const passwordHash = await bcrypt.hash(password, 10);
         //creating a new instance of user model
@@ -20,14 +20,17 @@ authRouter.post("/signup", async (req, res) => {
             firstName,
             lastName,
             email,
-            password: passwordHash
+            password: passwordHash,
+            age,
+            gender,
+            interestedIn
         });
 
         await user.save();
         res.send("User signed up");
     } catch (error) {
         console.error(error);
-        res.status(400).send("Error signing up user" + error.message);
+        res.status(400).send("Error signing up user: " + error.message);
     }
 });
 

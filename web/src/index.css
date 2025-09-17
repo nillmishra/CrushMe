@@ -1,1 +1,44 @@
 @import "tailwindcss";
+@plugin "daisyui";
+
+/* Brand gradient available in both themes */
+:root[data-theme="light"] {
+  --brand-gradient: linear-gradient(135deg, #FF5F6D 0%, #FF2D92 55%, #8A5DFF 100%);
+}
+
+/* Custom dark theme palette */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* brand gradient (keep pink vibe in hero) */
+  --brand-gradient: linear-gradient(135deg, #FF5F6D 0%, #FF2D92 55%, #8A5DFF 100%);
+
+  /* base surfaces (HSL of #261b25) */
+  --b1: 306 17% 13%; /* #261b25 */
+  --b2: 306 17% 16%;
+  --b3: 306 17% 20%;
+
+  /* base text (HSL of #c59f61) */
+  --bc: 37 46% 58%; /* #c59f61 */
+
+  /* optional: neutral map to base for cohesion */
+  --n: 306 17% 13%;
+  --nc: 37 46% 58%;
+
+  /* keep brand buttons pink */
+  --p: 331 100% 59%;
+  --pc: 0 0% 100%;
+  --s: 355 100% 69%;
+  --sc: 0 0% 100%;
+  --a: 326 100% 73%;
+  --ac: 0 0% 10%;
+
+  /* shape + motion */
+  --rounded-box: 1rem;
+  --rounded-btn: 0.75rem;
+  --rounded-badge: 1rem;
+  --tab-radius: 0.5rem;
+  --animation-btn: 0.2s;
+  --btn-text-case: capitalize;
+  --btn-focus-scale: 0.98;
+}

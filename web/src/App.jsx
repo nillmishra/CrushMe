@@ -1,9 +1,10 @@
-function App() {
-  return (
-    <div className="text-2xl font-bold text-blue-500">
-      Hello
-    </div>
-  )
-}
+import Navbar from "./components/navbar";
 
-export default App
+export default function App() {
+  return (
+    
+    <div className="min-h-screen bg-base-200 text-base-content transition-colors duration-300">
+      <Navbar />
+    </div>
+  );
+}

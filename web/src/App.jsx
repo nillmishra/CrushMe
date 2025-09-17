@@ -1,10 +1,16 @@
-import Navbar from "./components/navbar";
+import Home from "./pages/home";
+import {BrowserRouter as Router, Route, Routes, BrowserRouter} from "react-router-dom";
 
 export default function App() {
   return (
-    
-    <div className="min-h-screen bg-base-200 text-base-content transition-colors duration-300">
-      <Navbar />
-    </div>
+    <>
+    <BrowserRouter basename="/">
+      <Routes>
+        <Route path="/" element={<Home />}>
+        
+        </Route>
+      </Routes>
+    </BrowserRouter>
+    </>
   );
 }

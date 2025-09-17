@@ -21,7 +21,7 @@ const Navbar = () => {
         <div className="flex-1 ml-14">
           <img src="/Crushme.svg" alt="CrushMe" className="h-9 w-auto" />
         </div>
-        <div className="flex-none gap-2 mr-6">
+        <div className="flex-none gap-2 mr-2">
           <label className="sr-only" htmlFor="theme-select">
             Select theme
           </label>
@@ -40,16 +40,11 @@ const Navbar = () => {
           </select>
         </div>
         <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Search"
-            className="input input-bordered w-24 md:w-auto"
-          />
           <div className="dropdown dropdown-end">
             <div
               tabIndex={0}
               role="button"
-              className="btn btn-ghost btn-circle avatar mr-14 ml-6"
+              className="btn btn-ghost btn-circle avatar mr-12 ml-6"
             >
               <div className="w-10 rounded-full">
                 <img

@@ -1,16 +1,17 @@
-import Home from "./pages/home";
-import {BrowserRouter as Router, Route, Routes, BrowserRouter} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Home from "./pages/Home";   // acts as layout (has <Outlet />)
+import Login from "./pages/Login";
 
 export default function App() {
   return (
-    <>
-    <BrowserRouter basename="/">
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />}>
-        
+        <Route element={<Home />}>
+          {/* Optional: default route */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<Login />} />
         </Route>
       </Routes>
     </BrowserRouter>
-    </>
   );
 }

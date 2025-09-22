@@ -1,80 +1,94 @@
+import axios from "axios";
 import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../utils/constants";
+import { clearUser } from "../utils/userSlice"; // or use clearUser if you have it
 
 const STORAGE_KEY = "cm-theme";
-const THEME_OPTIONS = [
-  { value: "light", label: "☀️" },
-  { value: "dark", label: "🌙" },
-];
-
 
 const Navbar = () => {
-  const [theme, setTheme] = React.useState(() => {
-    return localStorage.getItem(STORAGE_KEY) || "light";
-  });
+  const [theme, setTheme] = React.useState(
+    () => localStorage.getItem(STORAGE_KEY) || "light"
+  );
+  const user = useSelector((state) => state.user.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem(STORAGE_KEY, theme);
   }, [theme]);
-  return(
-<div className="navbar bg-base-100 shadow">
-        <div className="flex-1 ml-14">
-          <img src="/Crushme.svg" alt="CrushMe" className="h-9 w-auto" />
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(`${API_BASE_URL}/logout`, {}, { withCredentials: true });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      // Clear user so AuthGate shows Login at "/"
+      dispatch(clearUser());
+      navigate("/", { replace: true });
+    }
+  }; // <-- close the function
+
+  return (
+    <div className="navbar bg-base-100 shadow">
+      <Link to="/feed" className="flex-1 ml-14">
+        <img src="/Crushme.svg" alt="CrushMe" className="h-9 w-auto" />
+      </Link>
+      <div className="flex gap-2 mr-14">
+        <div className="form-control mt-1.5 mr-2">
+          Welcome, {user?.firstName || "Guest"}
         </div>
-        <div className="flex-none gap-2 mr-2">
-          <label className="sr-only" htmlFor="theme-select">
-            Select theme
-          </label>
-          <select
-            id="theme-select"
-            className="select select-bordered"
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)}
-            aria-label="Select theme"
-          >
-            {THEME_OPTIONS.map((t) => (
-              <option key={t.value} value={t.value}>
-                {t.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex gap-2">
-          <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-ghost btn-circle avatar mr-12 ml-6"
-            >
-              <div className="w-10 rounded-full">
-                <img
-                  alt="Tailwind CSS Navbar component"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                />
-              </div>
+        <div className="dropdown dropdown-end">
+          <button className="btn btn-ghost btn-circle avatar mr-4">
+            <div className="w-10 rounded-full">
+              <img
+                alt="User avatar"
+                src={
+                  user?.photoUrl ||
+                  "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                }
+              />
             </div>
-            <ul
-              tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
-            >
-              <li>
-                <a className="justify-between">
-                  Profile
-                  <span className="badge">New</span>
-                </a>
-              </li>
-              <li>
-                <a>Settings</a>
-              </li>
-              <li>
-                <a>Logout</a>
-              </li>
-            </ul>
-          </div>
+          </button>
+          <ul
+            tabIndex={0}
+            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-56 p-2 shadow"
+          >
+            <li>
+              <Link to="/profile" className="justify-between">
+                Profile
+                <span className="badge">New</span>
+              </Link>
+            </li>
+            <li>
+              <button type="button">Settings</button>
+            </li>
+
+            <li className="menu-title mt-2">Appearance</li>
+            <li>
+              <label className="flex items-center justify-between px-2 py-2">
+                <span>Dark mode</span>
+                <input
+                  type="checkbox"
+                  className="toggle"
+                  checked={theme === "dark"}
+                  onChange={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  aria-label="Toggle dark mode"
+                />
+              </label>
+            </li>
+
+            <li>
+              <button type="button" onClick={handleLogout}>Logout</button>
+            </li>
+          </ul>
         </div>
       </div>
-
-  )
- }
+    </div>
+  );
+};
 
 export default Navbar;

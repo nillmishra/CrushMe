@@ -69,7 +69,7 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
     const userId = loggedInUser._id;
     const interestedIn = (loggedInUser.interestedIn || '').trim();
 
-    console.log("interestedIn:", interestedIn, "gender:", loggedInUser.gender);
+
 
     // Build interestedIn filter
     // If "All" (or empty) -> no filter. Else match gender exactly (case-insensitive).

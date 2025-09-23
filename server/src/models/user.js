@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema({
     },
     photoUrl:{
         type: String,  
-        default : "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.flaticon.com%2Ffree-icon%2Fuser_149071&psig=AOvVaw2xNGU5dFryweKEx3WfJqpJ&ust=1757590546538000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCPC_tZaNzo8DFQAAAAAdAAAAABBY",
+        default : "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp",
         validate(value){
             if(!validator.isURL(value)){
                 throw new Error("Photo URL is not valid");

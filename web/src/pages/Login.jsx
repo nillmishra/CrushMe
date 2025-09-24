@@ -6,8 +6,8 @@ import { setUser } from "../utils/userSlice";
 import { API_BASE_URL } from "../utils/constants";
 
 const Login = () => {
-  const [email, setEmail] = useState("alokmishra67@gmail.com");
-  const [password, setPassword] = useState("Alok@123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex w-full justify-center px-4 py-16 mt-16">
+    <div className="flex w-full justify-center px-4 py-16 mt-10">
       <div className="card w-full max-w-sm bg-base-100 text-base-content shadow-xl transition-all duration-200 hover:shadow-2xl">
         <div className="card-body">
           <h2 className="card-title text-2xl font-bold">Login</h2>

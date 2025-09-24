@@ -1,38 +1,48 @@
-import React from "react";
-import { useSelector } from "react-redux";
-
-const STORAGE_KEY = "cm-theme";
 
 const Footer = () => {
-  const user = useSelector((state) => state.user.user);
-  console.log(user);
-  const [theme, setTheme] = React.useState(
-    () => localStorage.getItem(STORAGE_KEY) || "light"
-  );
-
-  React.useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme]);
 
   return (
     <footer className="footer sm:footer-horizontal bg-base-100 shadow text-base-content items-center p-4 fixed bottom-0 w-full">
-      <aside className="grid-flow-col items-center">
+      <aside className="grid-flow-col items-center ml-14">
         <svg
-      width="36"
-      height="36"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-      fillRule="evenodd"
-      clipRule="evenodd"
-      className="fill-current">
-      <path
-        d="M22.672 15.226l-2.432.811.841 2.515c.33 1.019-.209 2.127-1.23 2.456-1.15.325-2.148-.321-2.463-1.226l-.84-2.518-5.013 1.677.84 2.517c.391 1.203-.434 2.542-1.831 2.542-.88 0-1.601-.564-1.86-1.314l-.842-2.516-2.431.809c-1.135.328-2.145-.317-2.463-1.229-.329-1.018.211-2.127 1.231-2.456l2.432-.809-1.621-4.823-2.432.808c-1.355.384-2.558-.59-2.558-1.839 0-.817.509-1.582 1.327-1.846l2.433-.809-.842-2.515c-.33-1.02.211-2.129 1.232-2.458 1.02-.329 2.13.209 2.461 1.229l.842 2.515 5.011-1.677-.839-2.517c-.403-1.238.484-2.553 1.843-2.553.819 0 1.585.509 1.85 1.326l.841 2.517 2.431-.81c1.02-.33 2.131.211 2.461 1.229.332 1.018-.21 2.126-1.23 2.456l-2.433.809 1.622 4.823 2.433-.809c1.242-.401 2.557.484 2.557 1.838 0 .819-.51 1.583-1.328 1.847m-8.992-6.428l-5.01 1.675 1.619 4.828 5.011-1.674-1.62-4.829z"></path>
-    </svg>
+  width="36"
+  height="36"
+  viewBox="0 0 64 64"
+  xmlns="http://www.w3.org/2000/svg"
+  className="inline-block"
+>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stopColor="#FF5F6D" />
+      <stop offset="55%" stopColor="#FF2D92" />
+      <stop offset="100%" stopColor="#8A5DFF" />
+    </linearGradient>
+
+    <mask id="bolt-cut" maskUnits="userSpaceOnUse">
+      <rect width="64" height="64" fill="#fff" />
+      <polygon fill="#000" points="36,12 28,26 34,26 24,44 44,28 36,28" />
+    </mask>
+  </defs>
+
+  <rect width="64" height="64" rx="12" fill="url(#g)" />
+  <path
+    d="
+      M32 48
+      C 22 40, 14 31, 14 22
+      C 14 15, 19 10, 26 10
+      C 30 10, 32 13, 32 16
+      C 32 13, 34 10, 38 10
+      C 45 10, 50 15, 50 22
+      C 50 31, 42 40, 32 48 Z
+    "
+    fill="#fff"
+    mask="url(#bolt-cut)"
+  />
+</svg>
         <p>Copyright © {new Date().getFullYear()} - All right reserved</p>
       </aside>
 
-      <nav className="grid-flow-col gap-4 md:place-self-center md:justify-self-end items-center">
+      <nav className="grid-flow-col gap-4 md:place-self-center md:justify-self-end items-center mr-14">
          <a>
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -66,17 +76,6 @@ const Footer = () => {
           d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"></path>
       </svg>
     </a>
-
-          <label className="flex items-center gap-2 mr-14">
-            <span className="text-sm">Dark mode</span>
-            <input
-              type="checkbox"
-              className="toggle toggle-sm"
-              checked={theme === "dark"}
-              onChange={(e) => setTheme(e.target.checked ? "dark" : "light")}
-              aria-label="Toggle dark mode"
-            />
-          </label>
       </nav>
     </footer>
   );

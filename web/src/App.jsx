@@ -7,6 +7,8 @@ import Home from "./pages/Home"; // layout with <Outlet />
 import Feed from "./pages/Feed";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile"; // uncomment if you have it
+import Connections from "./pages/Connections";
+import Requests from "./pages/Requests";
 
 // Renders Feed if logged in, otherwise Login
 function AuthGate() {
@@ -46,6 +48,24 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="connections"
+              element={
+                <ProtectedRoute>
+                  <Connections />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="requests"
+              element={
+                <ProtectedRoute>
+                  <Requests />
                 </ProtectedRoute>
               }
             />

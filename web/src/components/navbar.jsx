@@ -4,6 +4,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../utils/constants";
 import { clearUser } from "../utils/userSlice"; // or use clearUser if you have it
+import {removeFeed} from "../utils/feedSlice";
+import { clearConnections } from "../utils/connectionSlice";
 
 const STORAGE_KEY = "cm-theme";
 
@@ -28,6 +30,8 @@ const Navbar = () => {
     } finally {
       // Clear user so AuthGate shows Login at "/"
       dispatch(clearUser());
+      dispatch(removeFeed());
+      dispatch(clearConnections());
       navigate("/", { replace: true });
     }
   }; // <-- close the function
@@ -60,11 +64,13 @@ const Navbar = () => {
             <li>
               <Link to="/profile" className="justify-between">
                 Profile
-                <span className="badge">New</span>
               </Link>
-            </li>
-            <li>
-              <button type="button">Settings</button>
+              <Link to="/connections" className="justify-between">
+                Connections
+              </Link>
+              <Link to="/requests" className="justify-between">
+                Requests
+              </Link>
             </li>
 
             <li className="menu-title mt-2">Appearance</li>

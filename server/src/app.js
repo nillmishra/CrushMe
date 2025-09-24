@@ -1,17 +1,32 @@
+// server/app.js
 const express = require('express');
-const connectDB = require('./config/database'); // Ensure database connection is established
-const app = express();
 const cookieParser = require('cookie-parser');
-const cors = require('cors');
+const connectDB = require('./config/database');
 
-// Middleware
-app.use(cors(
-    {origin: 'http://localhost:5173', credentials: true}
-));
-app.use(express.json()); // Middleware to parse JSON bodies
-app.use(cookieParser()); // Middleware to parse cookies
+const app = express();
 
-// Import and use routes
+// Global CORS + preflight (must be first)
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  const allowed = ['http://localhost:5173', 'http://127.0.0.1:5173'];
+  if (origin && allowed.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Vary', 'Origin');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    // PATCH removed
+    res.header('Access-Control-Allow-Methods', 'GET,HEAD,POST,PUT,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  }
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204); // end preflight
+  }
+  next();
+});
+
+app.use(express.json());
+app.use(cookieParser());
+
+// Routers
 const authRouter = require('./routes/auth');
 const profileRouter = require('./routes/profile');
 const requestRouter = require('./routes/request');
@@ -22,20 +37,13 @@ app.use('/', profileRouter);
 app.use('/', requestRouter);
 app.use('/', userRouter);
 
-
-
-
-
-// Connect to MongoDB and start the server
-connectDB().then(() => {
+// Start
+connectDB()
+  .then(() => {
     console.log('Connected to MongoDB');
-    // Start server
-    app.listen(3000, () => {
-        console.log("Server is running on port 3000");
-    });
-}).catch((error) => {
-    console.error('Error connecting to MongoDB:', error);
-});
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+  })
+  .catch((err) => console.error('DB connection error:', err));
 
-
-
+module.exports = app;

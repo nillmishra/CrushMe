@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema({
     },
     photoUrl:{
         type: String,  
-        default : "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp",
+        default : "https://static.vecteezy.com/system/resources/thumbnails/020/765/399/small_2x/default-profile-account-unknown-icon-black-silhouette-free-vector.jpg",
         validate(value){
             if(!validator.isURL(value)){
                 throw new Error("Photo URL is not valid");

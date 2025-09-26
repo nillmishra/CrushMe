@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/Header";
 import Footer from "../components/Footer";
 import { API_BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
@@ -62,4 +62,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Home; 

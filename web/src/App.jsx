@@ -12,7 +12,7 @@ import Home from "./pages/Home";
 import Feed from "./pages/Feed";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Profile from "./pages/Profile";
+import Profile from "./pages/Profile"; 
 import Connections from "./pages/Connections";
 import Requests from "./pages/Requests";
 

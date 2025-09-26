@@ -60,56 +60,55 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
 userRouter.get("/user/feed", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
-
-    const page = parseInt(req.query.page) || 1;
-    let limit = parseInt(req.query.limit) || 10;
-    if (limit > 50) limit = 50; // max limit
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    let limit = Math.min(50, parseInt(req.query.limit) || 10);
     const skip = (page - 1) * limit;
 
     const userId = loggedInUser._id;
-    const interestedIn = (loggedInUser.interestedIn || '').trim();
+    const interestedIn = (loggedInUser.interestedIn || "").trim();
 
+    // Gender filter: if "All" or empty -> no filter
+    const interestFilter =
+      interestedIn && interestedIn.toLowerCase() !== "all"
+        ? { gender: { $regex: `^${interestedIn}$`, $options: "i" } }
+        : {};
 
+    // Hide any users you have any relationship with of these statuses
+    const HIDE_STATUSES = ["accepted", "rejected", "interested", "ignored"];
+    const statusRegex = HIDE_STATUSES.map((s) => new RegExp(`^${s}$`, "i"));
 
-    // Build interestedIn filter
-    // If "All" (or empty) -> no filter. Else match gender exactly (case-insensitive).
-    let interestFilter = {};
-    if (interestedIn && interestedIn.toLowerCase() !== 'all') {
-      interestFilter = {
-        gender: { $regex: `^${interestedIn}$`, $options: 'i' }
-      };
-    }
-
-    // Find accepted connections (hide both sides) + hide self
-    const acceptedRequests = await ConnectionRequest.find({
-      status: { $regex: '^accepted$', $options: 'i' }, // supports 'accepted' or 'ACCEPTED'
-      $or: [
-        { fromUserId: userId },
-        { toUserId: userId }
-      ]
-    }).select('fromUserId toUserId');
+    // Find all requests (either direction) with those statuses
+    const requestsToHide = await ConnectionRequest.find({
+      status: { $in: statusRegex },
+      $or: [{ fromUserId: userId }, { toUserId: userId }],
+    })
+      .select("fromUserId toUserId")
+      .lean();
 
     const hiddenUserIds = new Set([String(userId)]);
-    acceptedRequests.forEach((r) => {
+    for (const r of requestsToHide) {
       hiddenUserIds.add(String(r.fromUserId));
       hiddenUserIds.add(String(r.toUserId));
-    });
+    }
 
     const query = {
       $and: [
         { _id: { $nin: Array.from(hiddenUserIds) } },
-        ...(Object.keys(interestFilter).length ? [interestFilter] : [])
-      ]
+        ...(Object.keys(interestFilter).length ? [interestFilter] : []),
+      ],
     };
 
     const feedUsers = await User.find(query)
-      .select(USER_FIELDS) // include 'gender' here if you want it in the response
-      .lean()
-      .skip(skip).limit(limit);
+      .select(USER_FIELDS) // ensure USER_FIELDS includes 'gender'
+      .sort({ _id: -1 })   // stable order fixes offset paging
+      .skip(skip)
+      .limit(limit)
+      .lean();
 
     res.json({
       message: `${feedUsers.length} users found for feed`,
-      data: feedUsers
+      hasMore: feedUsers.length === limit,
+      data: feedUsers,
     });
   } catch (error) {
     console.error(error);

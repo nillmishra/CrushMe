@@ -1,23 +1,29 @@
 import axios from "axios";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../utils/constants";
-import { clearUser } from "../utils/userSlice"; // or use clearUser if you have it
-import {removeFeed} from "../utils/feedSlice";
+import { clearUser } from "../utils/userSlice";
+import { removeFeed } from "../utils/feedSlice";
 import { clearConnections } from "../utils/connectionSlice";
+import { clearRequests } from "../utils/requestSlice";
 
 const STORAGE_KEY = "cm-theme";
 
 const Navbar = () => {
-  const [theme, setTheme] = React.useState(
+  const [theme, setTheme] = useState(
     () => localStorage.getItem(STORAGE_KEY) || "light"
   );
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  
   const user = useSelector((state) => state.user.user);
+  const requests = useSelector((state) => state.requests);
+  const requestCount = requests?.length || 0;
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  React.useEffect(() => {
+  useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem(STORAGE_KEY, theme);
   }, [theme]);
@@ -28,25 +34,28 @@ const Navbar = () => {
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
-      // Clear user so AuthGate shows Login at "/"
       dispatch(clearUser());
       dispatch(removeFeed());
       dispatch(clearConnections());
+      dispatch(clearRequests());
       navigate("/", { replace: true });
     }
-  }; // <-- close the function
+  };
 
   return (
     <div className="navbar bg-base-100 shadow">
-      <Link to="/feed" className="flex-1 ml-14">
+      <Link to="/feed" className="flex-1 ml-2 md:ml-14">
         <img src="/Crushme.svg" alt="CrushMe" className="h-9 w-auto" />
       </Link>
-      <div className="flex gap-2 mr-14">
+      <div className="flex gap-2 mr-0 md:mr-14">
         <div className="form-control mt-1.5 mr-2">
           Welcome, {user?.firstName || "Guest"}
         </div>
         <div className="dropdown dropdown-end">
-          <button className="btn btn-ghost btn-circle avatar mr-4">
+          <button 
+            className="btn btn-ghost btn-circle avatar mr-4 relative"
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+          >
             <div className="w-10 rounded-full">
               <img
                 alt="User avatar"
@@ -56,6 +65,11 @@ const Navbar = () => {
                 }
               />
             </div>
+            {requestCount > 0 && !dropdownOpen && (
+              <div className="absolute -top-1 -right-1 bg-error text-white rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold">
+                {requestCount > 9 ? '9+' : requestCount}
+              </div>
+            )}
           </button>
           <ul
             tabIndex={0}
@@ -68,8 +82,13 @@ const Navbar = () => {
               <Link to="/connections" className="justify-between">
                 Connections
               </Link>
-              <Link to="/requests" className="justify-between">
-                Requests
+              <Link to="/requests" className="justify-between relative">
+                <span>Requests</span>
+                {requestCount > 0 && (
+                  <div className="badge badge-error badge-sm text-white">
+                    {requestCount > 99 ? '99+' : requestCount}
+                  </div>
+                )}
               </Link>
             </li>
 

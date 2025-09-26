@@ -17,6 +17,14 @@ const Home = () => {
     const controller = new AbortController();
 
     const fetchUser = async () => {
+      // Check for token before making the API call
+      const hasToken = localStorage.getItem('authToken');
+      
+      if (!hasToken) {
+        setAuthChecked(true);
+        return;
+      }
+      
       try {
         const res = await axios.get(`${API_BASE_URL}/profile/view`, {
           withCredentials: true,

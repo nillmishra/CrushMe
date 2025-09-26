@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import Navbar from "../components/navbar";
+import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { API_BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";

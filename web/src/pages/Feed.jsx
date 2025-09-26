@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constants";
 import { addFeed } from "../utils/feedSlice";
-import UserCard from "../components/userCard";
+import UserCard from "../components/UserCard";
 import ShimmerCard from "../components/ShimmerCard";
 import { preloadImage } from "../utils/helpers";
 
